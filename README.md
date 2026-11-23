@@ -1,5 +1,10 @@
 # AgentPayGuard — programmable tUSD8 escrow that an AI agent can use safely
 
+![AgentPayGuard](cover.png)
+
+**[Open the console](https://a415635511-alt.github.io/qday-agent-escrow/) · [Watch the 2:36 demo](https://github.com/a415635511-alt/qday-agent-escrow/releases/download/demo-v1/AgentPayGuard_Demo_1080p.mp4) · [Contract](https://explorer-test.qday.info/address/0xAFE1f520B2970728235856b8C99157184518C45a)**
+
+
 **Aevum Builder Challenge #1** · Tracks: *Confirmation of Payee*, *Invoice Payments* ·
 QDay Aevum Testnet (chain `44005`) · tUSD8 `0x456569838f1d43009A91ebA4263147Afd7233483`
 
