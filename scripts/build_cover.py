@@ -30,6 +30,9 @@ f_title = load(FONT_CANDIDATES, 64)
 f_sub = load(FONT_CANDIDATES, 27)
 f_body = load(FONT_CANDIDATES, 23)
 f_mono = load(MONO_CANDIDATES, 19)
+f_addr = load(MONO_CANDIDATES, 25)
+f_badge = load(FONT_CANDIDATES, 44)
+f_badge_small = load(FONT_CANDIDATES, 18)
 
 img = Image.new("RGB", (W, H), BG)
 d = ImageDraw.Draw(img)
@@ -51,11 +54,15 @@ for p in points:
 
 d.rectangle([56, 356, W - 56, 552], fill=CARD, outline=(40, 50, 68))
 d.text((84, 378), "Live on QDay Aevum testnet · chain 44005 · source verified", font=f_body, fill=GREEN)
-d.text((84, 418), dep["agentPayGuard"], font=f_mono, fill=ACCENT)
+d.text((84, 412), dep["agentPayGuard"], font=f_addr, fill=ACCENT)
 d.text((84, 448), "settled a real 1.5 tUSD8 invoice across treasury / agent / supplier", font=f_body, fill=FG)
 d.text((84, 486), "9/9 receipts status=1 · cap refusals and revocation proven on chain", font=f_body, fill=MUTED)
 
-d.text((56, 580), "github.com/a415635511-alt/qday-agent-escrow", font=f_mono, fill=MUTED)
+d.text((56, 576), "github.com/a415635511-alt/qday-agent-escrow", font=f_mono, fill=(176, 186, 202))
+# right-hand badge inside the proof card
+d.ellipse([1028, 392, 1198, 512], outline=GREEN, width=3)
+d.text((1064, 412), "9/9", font=f_badge, fill=GREEN)
+d.text((1060, 466), "receipts ok", font=f_badge_small, fill=MUTED)
 
 out = ROOT / "cover.png"
 img.save(out)
