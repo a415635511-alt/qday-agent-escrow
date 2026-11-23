@@ -15,7 +15,10 @@
   .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
   section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
   section h2 { font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--dim); margin:0 0 12px; }
-  label { display:block; font-size:12px; color:var(--dim); margin:10px 0 4px; }
+  label { display:block; font-size:12.5px; color:var(--fg2); margin:8px 0 4px; }
+  .sub { margin:2px 0 0; font-size:12px; color:var(--fg2); }
+  input { font-family:var(--mono); }
+  button:disabled { opacity:.45; cursor:not-allowed; }
   input, select, textarea { width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:#0e1428; color:var(--ink); font:inherit; }
   button { cursor:pointer; border:0; border-radius:8px; padding:9px 14px; font:inherit; font-weight:600; background:var(--accent); color:#fff; }
   button.ghost { background:transparent; border:1px solid var(--line); color:var(--ink); }
@@ -49,17 +52,19 @@
 <main>
   <div class="grid">
     <section>
-      <h2>1 · Register as payee (Confirmation of Payee)</h2>
+      <h2>1 · Register payee</h2>
+      <p class="sub">Confirmation of Payee — the name is hashed on-chain</p>
       <label>Canonical payee name (hashed on-chain, never stored in clear)</label>
       <input id="payeeName" placeholder="eu-data-labs.qday" />
       <label>Metadata hash source (verification URI / tax id proof)</label>
       <input id="payeeMeta" placeholder="ipfs://bafy… or https://…/kyb.json" />
-      <div class="row"><button id="doRegister">Register payee</button></div>
+      <div class="row"><button id="doRegister" data-action="1">Register payee</button></div>
       <p class="hint">Every later payout must carry the same name hash. A typo'd or swapped payee address fails the on-chain CoP check and the transfer reverts.</p>
     </section>
 
     <section>
-      <h2>2 · Grant the AI agent a bounded mandate</h2>
+      <h2>2 · Bound the AI agent</h2>
+      <p class="sub">Spending caps live in the contract, not in the agent</p>
       <label>Agent address</label>
       <input id="agentAddr" placeholder="0x…" />
       <div class="grid" style="grid-template-columns:1fr 1fr">
@@ -68,8 +73,8 @@
       </div>
       <label>Expires in (hours)</label><input id="capHours" value="24" />
       <div class="row">
-        <button id="doMandate">Set mandate</button>
-        <button id="doRevoke" class="ghost">Revoke now (1 tx)</button>
+        <button id="doMandate" data-action="1">Set mandate</button>
+        <button id="doRevoke" class="ghost" data-action="1">Revoke now (1 tx)</button>
       </div>
       <p class="hint">Caps and expiry are enforced inside the contract, not by the agent's goodwill. Revocation cuts the agent off in the same block.</p>
     </section>
@@ -90,8 +95,8 @@
       </div>
     </div>
     <div class="row">
-      <button id="doApprove" class="ghost">Approve tUSD8 to escrow</button>
-      <button id="doFund">Create &amp; fund invoice</button>
+      <button id="doApprove" class="ghost" data-action="1">Approve tUSD8 to escrow</button>
+      <button id="doFund" data-action="1">Create &amp; fund invoice</button>
     </div>
   </section>
 
@@ -103,15 +108,15 @@
         <label>Deliverable receipt hash (artifact / dataset SHA-256)</label>
         <input id="actReceipt" placeholder="sha256:…" />
         <div class="row">
-          <button id="doDeliver">Submit deliverable</button>
-          <button id="doRelease">Release funds</button>
+          <button id="doDeliver" data-action="1">Submit deliverable</button>
+          <button id="doRelease" data-action="1">Release funds</button>
         </div>
       </div>
       <div>
         <label>Evidence hash for a dispute</label><input id="actEvidence" placeholder="sha256:…" />
         <div class="row">
-          <button id="doDispute" class="ghost">Freeze (dispute)</button>
-          <button id="doRefund" class="ghost">Refund after deadline</button>
+          <button id="doDispute" class="ghost" data-action="1">Freeze (dispute)</button>
+          <button id="doRefund" class="ghost" data-action="1">Refund after deadline</button>
         </div>
         <p class="hint">Once disputed, neither side can move funds — the escrow becomes an audit trail.</p>
       </div>
@@ -186,6 +191,12 @@ const log = (msg, isErr) => {
   el.scrollTop = el.scrollHeight;
 };
 const shortAddr = (a) => `${a.slice(0, 10)}…${a.slice(-4)}`;
+const ACTION_BUTTONS = () => Array.from(document.querySelectorAll('button[data-action]'))
+  .filter((b) => b.id !== 'connect');
+function syncActions() {
+  const on = Boolean(escrow);
+  ACTION_BUTTONS().forEach((b) => { b.disabled = !on; });
+}
 const units = (v) => ethers.parseUnits(String(v), 6);
 const hashed = (s) => ethers.keccak256(ethers.toUtf8Bytes(s));
 
@@ -282,6 +293,8 @@ async function send(label, fn) {
     log(`${label} — ${errText(e)}`, true);
   }
 }
+
+syncActions(); // every action button starts disabled until a wallet is connected
 
 $('connect').onclick = async () => {
   if (!window.ethereum) return log('No EVM wallet found in this browser. Install MetaMask or Rabby.', true);
