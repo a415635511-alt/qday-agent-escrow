@@ -17,7 +17,7 @@
 
 5. Legitimate invoice: 45 tUSD8 into escrow
 ───────────────────────────────────────────
-   funded, tx 0xe78927cdc882cb69fad03fdbe1dc737209999b9d6acbec1cd5f1b15cd0690ab4
+   funded, tx 0xf0ecbf18f773cbffda13a85756ef17d5101676313dfa26a2bbe5e6374a6f26e4
    escrow balance 45.0 tUSD8
 
 6. Attack: second invoice of 40 tUSD8 would break the 80 tUSD8 daily cap
@@ -26,7 +26,7 @@
 
 7. Supplier delivers, agent releases
 ────────────────────────────────────
-   released, tx 0xd325b43dd32edae116053d6c57d9a305a73c13bef09a097c2792e27ab4c71d7c
+   released, tx 0x0b73439ac58c5d4e518118351beab217cfd016e60abfd57619ad1c11cd088be4
    supplier balance 45.0 tUSD8
 
 8. Treasury revokes the agent and it is cut off immediately

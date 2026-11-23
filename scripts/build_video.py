@@ -187,26 +187,38 @@ if shot.exists():
 
 # ---------------------------------------------------------------- slide 6 (on-chain, only if deployed)
 dep = deployment()
+proof_path = ROOT / "onchain_proof.json"
+proof = json.loads(proof_path.read_text(encoding="utf-8")) if proof_path.exists() else {}
 if dep.get("agentPayGuard"):
-    img, d = canvas("On Aevum", "Live on chain 44005", "Read back from the chain, not from a log file")
-    card(d, [110, 330, W - 110, 860])
-    rows = [
-        ("AgentPayGuard", dep["agentPayGuard"]),
-        ("deploy tx", dep.get("deploymentTx", "")),
-        ("block", str(dep.get("deploymentBlock", ""))),
-        ("deployer", dep.get("deployer", "")),
-        ("tUSD8", dep.get("tusd8", "")),
+    img, d = canvas("On Aevum", "One invoice, settled on chain", "Every hash below is a real transaction on chain 44005")
+    card(d, [70, 300, 1160, 1000])
+    d.text((110, 330), f"AgentPayGuard  {dep['agentPayGuard']}", font=F_MONO, fill=ACCENT)
+    d.text((110, 372), f"tUSD8  {dep.get('tusd8','')}   ·   block {dep.get('deploymentBlock','')}", font=F_MONO_SM, fill=MUTED)
+    tx_rows = [r for r in proof.get("receipts", []) if r.get("hash")]
+    for i, r in enumerate(tx_rows[:9]):
+        y = 430 + i * 58
+        d.text((110, y), r["step"][:46], font=F_SMALL, fill=FG)
+        d.text((760, y), r["hash"][:24] + "…" + r["hash"][-6:], font=F_MONO_SM, fill=ACCENT)
+        d.text((1130, y), f"#{r.get('block','')}", font=F_MONO_SM, fill=MUTED)
+    card(d, [1200, 300, W - 70, 1000], outline=GREEN)
+    d.text((1240, 330), "Settled state (read back)", font=F_H2, fill=GREEN)
+    side = [
+        "source verified on explorer",
+        f"{len(tx_rows)} receipts, all status = 1",
+        "CoP match true / mismatch false",
+        "escrow held 1.5 tUSD8",
+        "supplier received 1.5 tUSD8",
+        "agent cap revert on-chain",
+        "agent cut off after revoke",
     ]
-    for i, (k, v) in enumerate(rows):
-        y = 380 + i * 88
-        d.text((150, y), k, font=F_SMALL, fill=MUTED)
-        d.text((520, y - 4), v, font=F_MONO, fill=FG)
-    d.text((110, 900), f"Explorer: {dep.get('explorer')}/address/{dep['agentPayGuard']}", font=F_MONO_SM, fill=GREEN)
+    for i, line in enumerate(side):
+        d.text((1240, 400 + i * 62), "• " + line, font=F_SMALL, fill=FG)
+    d.text((110, 1010), f"{dep.get('explorer')}/address/{dep['agentPayGuard']}", font=F_MONO_SM, fill=GREEN)
     p6 = OUT / "slide6.png"
     img.save(p6)
-    SLIDES.append((p6, "And here is the same contract deployed on Aevum testnet. These addresses were read back from the chain after the receipt, "
-                       "so you can open the explorer and inspect every transaction yourself."))
-
+    SLIDES.append((p6, "Then we ran the whole thing on Aevum testnet with three separate keys: a treasury, an AI agent and a supplier. "
+                       "The agent funded a one-point-five tUSD8 invoice inside its caps, the supplier submitted a deliverable hash, the treasury released, and the supplier actually received the money. "
+                       "Two attacks were refused by the contract itself, and after revocation the agent was cut off immediately. Every receipt reads status one, and the source is verified on the explorer."))
 # ---------------------------------------------------------------- slide 7 (close)
 img, d = canvas("Reusable", "Built to be picked up", "One flow, end to end — and a template for the next one")
 card(d, [110, 330, W - 110, 900])

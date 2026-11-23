@@ -33,6 +33,14 @@ if (errors.length > 0) {
 const outDir = path.join(root, 'artifacts');
 fs.mkdirSync(outDir, { recursive: true });
 
+// Keep the exact solc input + version so the deployed bytecode can be verified
+// on the explorer without a second, differently-configured compile.
+fs.writeFileSync(
+  path.join(outDir, 'standard-input.json'),
+  JSON.stringify({ input, compiler: solc.version() }, null, 2),
+);
+console.log(`solc ${solc.version()} — standard input saved`);
+
 for (const name of ['MockTUSD8', 'AgentPayGuard']) {
   const c = output.contracts['AgentPayGuard.sol'][name];
   fs.writeFileSync(

@@ -1,0 +1,131 @@
+{
+  "network": "QDay Aevum Testnet",
+  "chainId": 44005,
+  "explorer": "https://explorer-test.qday.info",
+  "guard": "0xAFE1f520B2970728235856b8C99157184518C45a",
+  "tusd8": "0x456569838f1d43009A91ebA4263147Afd7233483",
+  "roles": {
+    "treasury": "0xda4A61343Cc7624e372BaA7a880000576497e782",
+    "agent": "0x66d3608179d0bb92e3DEE3896A01e1eFD4A7a2f9",
+    "supplier": "0x2ecf282EA32B79B34B34792b372142d198F2b6b6"
+  },
+  "invoices": [
+    {
+      "id": 1,
+      "amount": "1.5",
+      "status": "RELEASED",
+      "agent": "0x66d3608179d0bb92e3DEE3896A01e1eFD4A7a2f9",
+      "payee": "0x2ecf282EA32B79B34B34792b372142d198F2b6b6"
+    }
+  ],
+  "steps": [
+    "guard      0xAFE1f520B2970728235856b8C99157184518C45a",
+    "treasury   0xda4A61343Cc7624e372BaA7a880000576497e782",
+    "agent      0x66d3608179d0bb92e3DEE3896A01e1eFD4A7a2f9",
+    "supplier   0x2ecf282EA32B79B34B34792b372142d198F2b6b6",
+    "gas sent to 0x66d3608179d0bb92e3DEE3896A01e1eFD4A7a2f9  tx 0x2c1169cc823abe92e4238b9242525ba42327aad155e9bf11d5d803ba5358f5bf",
+    "gas sent to 0x2ecf282EA32B79B34B34792b372142d198F2b6b6  tx 0xed8d90c128b5e83c04fe31ccd409e6afb58df3aca9bc7c31e5e12116d5c0c07f",
+    "registerPayee  tx 0x2a1e6ad759e0ab48f7c7fe0ed7d413518584208758ed829132c4f958d3e7b9bc  block 3877668",
+    "verifyPayee    match=true mismatch=false meta=0xdbacf41440…",
+    "approve        tx 0x8f2ada24c6afdc9088407693192b445c8c7927fa8108aaaa37d5cbc653aaa402",
+    "mandate        tx 0xd5895f604bff9cf2121ba006f71fa3e2532536222a2d19f3cb0636675df42aad  block 3877681",
+    "blocked (wrong payee name): \"COP_NAME_MISMATCH\"",
+    "blocked (over per-invoice cap): \"EXCEEDS_PER_INVOICE_CAP\"",
+    "invoice #1     tx 0x53e053b84d1ddff2a538370544972b46259f765919e02fdb3b91d61f47fd94d8  block 3877688",
+    "invoice #1     status FUNDED  amount 1.5 tUSD8  agent 0x66d3608179d0bb92e3DEE3896A01e1eFD4A7a2f9",
+    "escrow holds   1.5 tUSD8",
+    "deliverable    tx 0x49e775f3ad8e933512aa5f656b539dd6429e65de5b6658a494178b5ac2644070  block 3877694",
+    "release        tx 0x2298db49fc9d2b172ea733cfdfabd5d187001d5ef05139d80aa2ec38e12cb5f6  block 3877700",
+    "supplier got   1.5 tUSD8",
+    "revoke         tx 0x4381aebdb6e790370b45bc7c681f962bd5328b229e998ebf2cfd2ef11750492f  block 3877706",
+    "after revoke   \"MANDATE_INACTIVE\""
+  ],
+  "receipts": [
+    {
+      "step": "fund gas → 0x66d3608179d0bb92e3DEE3896A01e1eFD4A7a2f9",
+      "hash": "0x2c1169cc823abe92e4238b9242525ba42327aad155e9bf11d5d803ba5358f5bf",
+      "block": 3877659,
+      "gasUsed": "21000",
+      "explorer": "https://explorer-test.qday.info/tx/0x2c1169cc823abe92e4238b9242525ba42327aad155e9bf11d5d803ba5358f5bf"
+    },
+    {
+      "step": "fund gas → 0x2ecf282EA32B79B34B34792b372142d198F2b6b6",
+      "hash": "0xed8d90c128b5e83c04fe31ccd409e6afb58df3aca9bc7c31e5e12116d5c0c07f",
+      "block": 3877662,
+      "gasUsed": "21000",
+      "explorer": "https://explorer-test.qday.info/tx/0xed8d90c128b5e83c04fe31ccd409e6afb58df3aca9bc7c31e5e12116d5c0c07f"
+    },
+    {
+      "step": "registerPayee (supplier)",
+      "hash": "0x2a1e6ad759e0ab48f7c7fe0ed7d413518584208758ed829132c4f958d3e7b9bc",
+      "block": 3877668,
+      "gasUsed": "90724",
+      "explorer": "https://explorer-test.qday.info/tx/0x2a1e6ad759e0ab48f7c7fe0ed7d413518584208758ed829132c4f958d3e7b9bc"
+    },
+    {
+      "step": "tUSD8 approve (treasury → guard)",
+      "hash": "0x8f2ada24c6afdc9088407693192b445c8c7927fa8108aaaa37d5cbc653aaa402",
+      "block": 3877675,
+      "explorer": "https://explorer-test.qday.info/tx/0x8f2ada24c6afdc9088407693192b445c8c7927fa8108aaaa37d5cbc653aaa402"
+    },
+    {
+      "step": "setAgentMandate 2 / 4 tUSD8, 2h",
+      "hash": "0xd5895f604bff9cf2121ba006f71fa3e2532536222a2d19f3cb0636675df42aad",
+      "block": 3877681,
+      "gasUsed": "94780",
+      "explorer": "https://explorer-test.qday.info/tx/0xd5895f604bff9cf2121ba006f71fa3e2532536222a2d19f3cb0636675df42aad"
+    },
+    {
+      "step": "revert check: wrong payee name",
+      "result": "reverted",
+      "reason": "\"COP_NAME_MISMATCH\""
+    },
+    {
+      "step": "revert check: over per-invoice cap",
+      "result": "reverted",
+      "reason": "\"EXCEEDS_PER_INVOICE_CAP\""
+    },
+    {
+      "step": "createAndFundInvoice 1.5 tUSD8 (agent)",
+      "hash": "0x53e053b84d1ddff2a538370544972b46259f765919e02fdb3b91d61f47fd94d8",
+      "block": 3877688,
+      "gasUsed": "319724",
+      "explorer": "https://explorer-test.qday.info/tx/0x53e053b84d1ddff2a538370544972b46259f765919e02fdb3b91d61f47fd94d8"
+    },
+    {
+      "step": "submitDeliverable (supplier)",
+      "hash": "0x49e775f3ad8e933512aa5f656b539dd6429e65de5b6658a494178b5ac2644070",
+      "block": 3877694,
+      "gasUsed": "53364",
+      "explorer": "https://explorer-test.qday.info/tx/0x49e775f3ad8e933512aa5f656b539dd6429e65de5b6658a494178b5ac2644070"
+    },
+    {
+      "step": "releaseInvoice (treasury)",
+      "hash": "0x2298db49fc9d2b172ea733cfdfabd5d187001d5ef05139d80aa2ec38e12cb5f6",
+      "block": 3877700,
+      "gasUsed": "74627",
+      "explorer": "https://explorer-test.qday.info/tx/0x2298db49fc9d2b172ea733cfdfabd5d187001d5ef05139d80aa2ec38e12cb5f6"
+    },
+    {
+      "step": "revokeAgentMandate (treasury)",
+      "hash": "0x4381aebdb6e790370b45bc7c681f962bd5328b229e998ebf2cfd2ef11750492f",
+      "block": 3877706,
+      "gasUsed": "28531",
+      "explorer": "https://explorer-test.qday.info/tx/0x4381aebdb6e790370b45bc7c681f962bd5328b229e998ebf2cfd2ef11750492f"
+    },
+    {
+      "step": "revert check: agent after revocation",
+      "result": "reverted",
+      "reason": "\"MANDATE_INACTIVE\""
+    }
+  ],
+  "executedAt": "2026-11-23T01:11:47.401Z",
+  "verification": {
+    "everyReceiptStatus": 1,
+    "copRegistryReadBack": "match=true, mismatch=false",
+    "escrowFunded": true,
+    "supplierBalance": "1.5 tUSD8",
+    "capsEnforcedOffSigner": true,
+    "revocationEnforced": true
+  }
+}
