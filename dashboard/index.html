@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AgentPayGuard — Agent-safe tUSD8 escrow on QDay Aevum</title>
+<style>
+  :root { color-scheme: light dark; --bg:#0b1020; --card:#141b33; --line:#25304f; --ink:#e8ecf8; --dim:#93a0c0; --accent:#5b8cff; --ok:#2ecc8f; --warn:#ffb020; --bad:#ff5d6c; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:radial-gradient(1200px 600px at 15% -10%,#1b2750,transparent),var(--bg); color:var(--ink); }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; padding:16px 22px; border-bottom:1px solid var(--line); }
+  h1 { font-size:17px; margin:0; letter-spacing:.2px; }
+  h1 small { color:var(--dim); font-weight:400; margin-left:8px; }
+  main { max-width:1080px; margin:0 auto; padding:22px; display:grid; gap:16px; }
+  .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  section h2 { font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--dim); margin:0 0 12px; }
+  label { display:block; font-size:12px; color:var(--dim); margin:10px 0 4px; }
+  input, select, textarea { width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:#0e1428; color:var(--ink); font:inherit; }
+  button { cursor:pointer; border:0; border-radius:8px; padding:9px 14px; font:inherit; font-weight:600; background:var(--accent); color:#fff; }
+  button.ghost { background:transparent; border:1px solid var(--line); color:var(--ink); }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  .pill { display:inline-flex; gap:6px; align-items:center; padding:4px 10px; border-radius:999px; background:#0e1428; border:1px solid var(--line); font-size:12px; }
+  .pill b { color:var(--accent); font-weight:600; }
+  code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; word-break:break-all; }
+  #log { max-height:190px; overflow:auto; font-family:ui-monospace,Menlo,monospace; font-size:12px; color:var(--dim); white-space:pre-wrap; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th, td { text-align:left; padding:7px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--dim); font-weight:500; }
+  .s-FUNDED { color:var(--warn); } .s-DELIVERED { color:var(--accent); } .s-RELEASED { color:var(--ok); }
+  .s-REFUNDED { color:var(--dim); } .s-DISPUTED { color:var(--bad); }
+  a { color:var(--accent); }
+  .hint { color:var(--dim); font-size:12px; margin-top:8px; }
+  .err { color:var(--bad); }
+</style>
+</head>
+<body>
+<header>
+  <h1>AgentPayGuard <small>tUSD8 escrow with Confirmation of Payee, agent caps &amp; instant revocation · QDay Aevum 44005</small></h1>
+  <div class="row" style="margin:0">
+    <span class="pill">wallet <b id="acct">not connected</b></span>
+    <span class="pill">tQDAY <b id="gas">–</b></span>
+    <span class="pill">tUSD8 <b id="usd">–</b></span>
+    <button id="connect">Connect wallet</button>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+    <section>
+      <h2>1 · Register as payee (Confirmation of Payee)</h2>
+      <label>Canonical payee name (hashed on-chain, never stored in clear)</label>
+      <input id="payeeName" placeholder="eu-data-labs.qday" />
+      <label>Metadata hash source (verification URI / tax id proof)</label>
+      <input id="payeeMeta" placeholder="ipfs://bafy… or https://…/kyb.json" />
+      <div class="row"><button id="doRegister">Register payee</button></div>
+      <p class="hint">Every later payout must carry the same name hash. A typo'd or swapped payee address fails the on-chain CoP check and the transfer reverts.</p>
+    </section>
+
+    <section>
+      <h2>2 · Grant the AI agent a bounded mandate</h2>
+      <label>Agent address</label>
+      <input id="agentAddr" placeholder="0x…" />
+      <div class="grid" style="grid-template-columns:1fr 1fr">
+        <div><label>Max per invoice (tUSD8)</label><input id="capPer" value="50" /></div>
+        <div><label>Daily cap (tUSD8)</label><input id="capDay" value="80" /></div>
+      </div>
+      <label>Expires in (hours)</label><input id="capHours" value="24" />
+      <div class="row">
+        <button id="doMandate">Set mandate</button>
+        <button id="doRevoke" class="ghost">Revoke now (1 tx)</button>
+      </div>
+      <p class="hint">Caps and expiry are enforced inside the contract, not by the agent's goodwill. Revocation cuts the agent off in the same block.</p>
+    </section>
+  </div>
+
+  <section>
+    <h2>3 · Fund an escrowed invoice</h2>
+    <div class="grid">
+      <div>
+        <label>Payee address</label><input id="invPayee" placeholder="0x…" />
+        <label>Expected payee name hash (CoP)</label><input id="invName" placeholder="eu-data-labs.qday" />
+        <label>Amount (tUSD8)</label><input id="invAmount" value="25" />
+      </div>
+      <div>
+        <label>Deadline in (minutes)</label><input id="invMinutes" value="60" />
+        <label>Deliverable spec (hashed on-chain)</label><input id="invSpec" placeholder="EU TED tender feed, 30 days, CSV + API" />
+        <label>Payer (leave empty = self)</label><input id="invPayer" placeholder="0x… optional" />
+      </div>
+    </div>
+    <div class="row">
+      <button id="doApprove" class="ghost">Approve tUSD8 to escrow</button>
+      <button id="doFund">Create &amp; fund invoice</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>4 · Deliver, release, refund, dispute</h2>
+    <div class="grid">
+      <div>
+        <label>Invoice id</label><input id="actId" value="1" />
+        <label>Deliverable receipt hash (artifact / dataset SHA-256)</label>
+        <input id="actReceipt" placeholder="sha256:…" />
+        <div class="row">
+          <button id="doDeliver">Submit deliverable</button>
+          <button id="doRelease">Release funds</button>
+        </div>
+      </div>
+      <div>
+        <label>Evidence hash for a dispute</label><input id="actEvidence" placeholder="sha256:…" />
+        <div class="row">
+          <button id="doDispute" class="ghost">Freeze (dispute)</button>
+          <button id="doRefund" class="ghost">Refund after deadline</button>
+        </div>
+        <p class="hint">Once disputed, neither side can move funds — the escrow becomes an audit trail.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Invoice ledger</h2>
+    <table>
+      <thead><tr><th>#</th><th>Payee</th><th>Amount</th><th>Deadline</th><th>Status</th><th>Tx</th></tr></thead>
+      <tbody id="ledger"><tr><td colspan="6" class="hint">Connect a wallet to load invoices from chain events.</td></tr></tbody>
+    </table>
+    <div class="row"><button id="doRefresh" class="ghost">Refresh from chain</button></div>
+  </section>
+
+  <section>
+    <h2>Activity log</h2>
+    <div id="log"></div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.15.0/dist/ethers.umd.min.js"
+        integrity="sha384-OwtfwhPoP4aGLIw192UbPWjNbSkb7AllEbIhEJ01Yp8MxhNLLNUMA+DSjh6Zct05"
+        crossorigin="anonymous"></script>
+<script>
+const CHAIN = {
+  chainId: '0xabe5',
+  chainName: 'QDay Aevum Testnet',
+  nativeCurrency: { name: 'tQDAY', symbol: 'tQDAY', decimals: 18 },
+  rpcUrls: ['https://rpc-test.qday.info'],
+  blockExplorerUrls: ['https://explorer-test.qday.info'],
+};
+const TUSD8 = '0x456569838f1d43009A91ebA4263147Afd7233483';
+// Filled in after deployment (deploy script prints the same address).
+const ESCROW = window.ESCROW_ADDRESS || localStorage.getItem('escrow') || '';
+
+const ABI = [
+  'function registerPayee(bytes32 nameHash, bytes32 metadataHash)',
+  'function setAgentMandate(address agent, uint256 maxPerInvoice, uint256 dailyLimit, uint64 expiresAt)',
+  'function revokeAgentMandate(address agent)',
+  'function createAndFundInvoice(address payer, address payee, bytes32 expectedPayeeNameHash, uint256 amount, uint64 deadline, bytes32 specHash) returns (uint256)',
+  'function submitDeliverable(uint256 invoiceId, bytes32 receiptHash)',
+  'function releaseInvoice(uint256 invoiceId)',
+  'function refundInvoice(uint256 invoiceId, string reason)',
+  'function flagDispute(uint256 invoiceId, bytes32 evidenceHash)',
+  'function verifyPayee(address payee, bytes32 expectedNameHash) view returns (bool, bytes32)',
+  'function invoices(uint256) view returns (uint256 id, address payer, address agent, address payee, bytes32 expectedPayeeNameHash, uint256 amount, uint64 deadline, bytes32 specHash, bytes32 receiptHash, uint8 status)',
+  'function nextInvoiceId() view returns (uint256)',
+  'event InvoiceFunded(uint256 indexed invoiceId, address indexed payer, address indexed payee, address agent, uint256 amount, uint64 deadline, bytes32 specHash)',
+  'event DeliverableSubmitted(uint256 indexed invoiceId, address indexed payee, bytes32 receiptHash)',
+  'event InvoiceReleased(uint256 indexed invoiceId, address indexed payee, uint256 amount, address releasedBy)',
+  'event InvoiceRefunded(uint256 indexed invoiceId, address indexed payer, uint256 amount, string reason)',
+  'event InvoiceDisputed(uint256 indexed invoiceId, address indexed caller, bytes32 evidenceHash)',
+];
+const ERC20 = [
+  'function balanceOf(address) view returns (uint256)',
+  'function allowance(address,address) view returns (uint256)',
+  'function approve(address,uint256) returns (bool)',
+  'function decimals() view returns (uint8)',
+];
+const STATUS = ['NONE', 'FUNDED', 'DELIVERED', 'RELEASED', 'REFUNDED', 'DISPUTED'];
+
+const $ = (id) => document.getElementById(id);
+// All log lines and ledger cells are built with textContent/DOM nodes: no chain
+// or RPC string is ever parsed as HTML, so a hostile payee label cannot inject markup.
+const log = (msg, isErr) => {
+  const el = $('log');
+  const line = document.createElement('span');
+  if (isErr) line.className = 'err';
+  line.textContent = `${new Date().toISOString().slice(11, 19)}  ${msg}\n`;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+};
+const shortAddr = (a) => `${a.slice(0, 10)}…${a.slice(-4)}`;
+const units = (v) => ethers.parseUnits(String(v), 6);
+const hashed = (s) => ethers.keccak256(ethers.toUtf8Bytes(s));
+
+let provider, signer, escrow, usd, me;
+
+async function ensureChain() {
+  const cur = await window.ethereum.request({ method: 'eth_chainId' });
+  if (cur.toLowerCase() === CHAIN.chainId) return;
+  try {
+    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN.chainId }] });
+  } catch {
+    await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [CHAIN] });
+  }
+}
+
+async function refreshBalances() {
+  const [gas, bal] = await Promise.all([provider.getBalance(me), usd.balanceOf(me)]);
+  $('gas').textContent = Number(ethers.formatEther(gas)).toFixed(4);
+  $('usd').textContent = Number(ethers.formatUnits(bal, 6)).toFixed(2);
+}
+
+async function refreshLedger() {
+  if (!escrow) return;
+  const next = Number(await escrow.nextInvoiceId());
+  const body = $('ledger');
+  body.replaceChildren();
+  if (next <= 1) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 6;
+    td.className = 'hint';
+    td.textContent = 'No invoices yet — fund one above.';
+    tr.appendChild(td);
+    body.appendChild(tr);
+    return;
+  }
+  for (let id = 1; id < next; id++) {
+    const inv = await escrow.invoices(id);
+    const st = STATUS[Number(inv.status)] || '?';
+    const tr = document.createElement('tr');
+    const cells = [
+      String(id),
+      shortAddr(inv.payee),
+      Number(ethers.formatUnits(inv.amount, 6)).toFixed(2),
+      new Date(Number(inv.deadline) * 1000).toISOString().slice(0, 16).replace('T', ' '),
+      st,
+    ];
+    for (const [i, text] of cells.entries()) {
+      const td = document.createElement('td');
+      td.textContent = text;
+      if (i === 4) td.className = `s-${st}`;
+      tr.appendChild(td);
+    }
+    const txCell = document.createElement('td');
+    const link = document.createElement('a');
+    link.href = `https://explorer-test.qday.info/address/${ESCROW}`;
+    link.target = '_blank';
+    link.rel = 'noreferrer';
+    link.textContent = 'explorer';
+    txCell.appendChild(link);
+    tr.appendChild(txCell);
+    body.appendChild(tr);
+  }
+}
+
+function errText(e) {
+  const raw = e?.shortMessage || e?.reason || e?.info?.error?.message || e?.message || String(e);
+  // Plain-language translation of the contract's revert codes.
+  const map = {
+    COP_NAME_MISMATCH: 'Blocked: the payee is not registered under this name — this is the Confirmation-of-Payee check stopping a misdirected payout.',
+    PAYEE_NOT_REGISTERED: 'Blocked: this address never registered as a payee, so its identity cannot be confirmed.',
+    EXCEEDS_PER_INVOICE_CAP: 'Blocked: this invoice is above the agent’s per-invoice limit.',
+    EXCEEDS_DAILY_CAP: 'Blocked: this invoice would break the agent’s rolling 24h cap.',
+    MANDATE_INACTIVE: 'Blocked: the agent’s mandate is revoked.',
+    MANDATE_EXPIRED: 'Blocked: the agent’s mandate has expired.',
+    REFUND_NOT_ALLOWED: 'Not allowed yet: only the payee can refund early, the payer must wait for the deadline.',
+    NOT_AUTHORIZED_RELEASE: 'Not allowed: only the payer or a still-active agent can release.',
+    INVALID_STATE: 'This invoice is not in a state where that action applies.',
+  };
+  const hit = Object.keys(map).find((k) => raw.includes(k));
+  return hit ? map[hit] : raw;
+}
+
+async function send(label, fn) {
+  try {
+    log(`${label} — waiting for wallet approval…`);
+    const tx = await fn();
+    log(`${label} — sent ${tx.hash}`);
+    const rc = await tx.wait();
+    log(`${label} — confirmed in block ${rc.blockNumber}`);
+    await refreshBalances();
+    await refreshLedger();
+  } catch (e) {
+    log(`${label} — ${errText(e)}`, true);
+  }
+}
+
+$('connect').onclick = async () => {
+  if (!window.ethereum) return log('No EVM wallet found in this browser. Install MetaMask or Rabby.', true);
+  try {
+    await ensureChain();
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send('eth_requestAccounts', []);
+    signer = await provider.getSigner();
+    me = await signer.getAddress();
+    $('acct').textContent = `${me.slice(0, 6)}…${me.slice(-4)}`;
+    if (!ESCROW) log('Escrow address not configured yet: set window.ESCROW_ADDRESS or localStorage.escrow.', true);
+    else { escrow = new ethers.Contract(ESCROW, ABI, signer); log(`Escrow ${ESCROW}`); }
+    usd = new ethers.Contract(TUSD8, ERC20, signer);
+    $('invPayer').placeholder = me;
+    await refreshBalances();
+    await refreshLedger();
+  } catch (e) { log(errText(e), true); }
+};
+
+$('doRegister').onclick = () => send('registerPayee', () =>
+  escrow.registerPayee(hashed($('payeeName').value.trim()), hashed($('payeeMeta').value.trim() || 'none')));
+
+$('doMandate').onclick = () => send('setAgentMandate', () => {
+  const expiry = Math.floor(Date.now() / 1000) + Number($('capHours').value || 24) * 3600;
+  return escrow.setAgentMandate($('agentAddr').value.trim(), units($('capPer').value), units($('capDay').value), expiry);
+});
+
+$('doRevoke').onclick = () => send('revokeAgentMandate', () => escrow.revokeAgentMandate($('agentAddr').value.trim()));
+
+$('doApprove').onclick = () => send('approve tUSD8', () => usd.approve(ESCROW, units('1000000')));
+
+$('doFund').onclick = () => send('createAndFundInvoice', () => {
+  const payer = $('invPayer').value.trim() || me;
+  const deadline = Math.floor(Date.now() / 1000) + Number($('invMinutes').value || 60) * 60;
+  return escrow.createAndFundInvoice(
+    payer,
+    $('invPayee').value.trim(),
+    hashed($('invName').value.trim()),
+    units($('invAmount').value),
+    deadline,
+    hashed($('invSpec').value.trim() || 'spec'),
+  );
+});
+
+$('doDeliver').onclick = () => send('submitDeliverable', () =>
+  escrow.submitDeliverable($('actId').value, hashed($('actReceipt').value.trim() || 'receipt')));
+
+$('doRelease').onclick = () => send('releaseInvoice', () => escrow.releaseInvoice($('actId').value));
+
+$('doRefund').onclick = () => send('refundInvoice', () =>
+  escrow.refundInvoice($('actId').value, $('actReceipt').value.trim() || 'deadline_missed'));
+
+$('doDispute').onclick = () => send('flagDispute', () =>
+  escrow.flagDispute($('actId').value, hashed($('actEvidence').value.trim() || 'evidence')));
+
+$('doRefresh').onclick = () => refreshLedger().then(() => log('ledger refreshed from chain'));
+
+log('Ready. Chain 44005 · tUSD8 ' + TUSD8);
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "qday-agent-escrow",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "tUSD8 Programmable AI-Agent Payment Escrow with Confirmation of Payee, Spending Caps & Instant Revocation on QDay Aevum Testnet (Chain ID 44005)",
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "test": "node --test --test-force-exit test/escrow.test.mjs",
+    "deploy:aevum": "node scripts/deploy_aevum.mjs",
+    "demo": "node scripts/demo_local.mjs"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "solc": "^0.8.29"
+  },
+  "devDependencies": {
+    "@foundry-rs/anvil-win32-amd64": "^1.0.0"
+  }
+}
