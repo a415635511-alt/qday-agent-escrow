@@ -3,3 +3,4 @@ artifacts/
 .env
 *.mp4
 .DS_Store
+!AgentPayGuard_Demo_1080p.mp4
