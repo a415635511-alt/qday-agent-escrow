@@ -151,7 +151,9 @@ const CHAIN = {
 };
 const TUSD8 = '0x456569838f1d43009A91ebA4263147Afd7233483';
 // Filled in after deployment (deploy script prints the same address).
-const ESCROW = window.ESCROW_ADDRESS || localStorage.getItem('escrow') || '';
+// Deployed on QDay Aevum testnet (chain 44005) — verified source.
+const DEPLOYED = '0xAFE1f520B2970728235856b8C99157184518C45a';
+const ESCROW = window.ESCROW_ADDRESS || localStorage.getItem('escrow') || DEPLOYED;
 
 const ABI = [
   'function registerPayee(bytes32 nameHash, bytes32 metadataHash)',
