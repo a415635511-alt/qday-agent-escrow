@@ -197,9 +197,9 @@ if dep.get("agentPayGuard"):
     tx_rows = [r for r in proof.get("receipts", []) if r.get("hash")]
     for i, r in enumerate(tx_rows[:9]):
         y = 430 + i * 58
-        d.text((110, y), r["step"][:46], font=F_SMALL, fill=FG)
-        d.text((760, y), r["hash"][:24] + "…" + r["hash"][-6:], font=F_MONO_SM, fill=ACCENT)
-        d.text((1130, y), f"#{r.get('block','')}", font=F_MONO_SM, fill=MUTED)
+        d.text((110, y), r["step"][:44], font=F_SMALL, fill=FG)
+        d.text((700, y), r["hash"][:16] + "…" + r["hash"][-6:], font=F_MONO_SM, fill=ACCENT)
+        d.text((1045, y), f"#{r.get('blockNumber') or r.get('block','')}", font=F_MONO_SM, fill=MUTED)
     card(d, [1200, 300, W - 70, 1000], outline=GREEN)
     d.text((1240, 330), "Settled state (read back)", font=F_H2, fill=GREEN)
     side = [

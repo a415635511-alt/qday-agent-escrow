@@ -46,34 +46,44 @@
       "hash": "0x2c1169cc823abe92e4238b9242525ba42327aad155e9bf11d5d803ba5358f5bf",
       "block": 3877659,
       "gasUsed": "21000",
-      "explorer": "https://explorer-test.qday.info/tx/0x2c1169cc823abe92e4238b9242525ba42327aad155e9bf11d5d803ba5358f5bf"
+      "explorer": "https://explorer-test.qday.info/tx/0x2c1169cc823abe92e4238b9242525ba42327aad155e9bf11d5d803ba5358f5bf",
+      "status": 1,
+      "blockNumber": 3877659
     },
     {
       "step": "fund gas → 0x2ecf282EA32B79B34B34792b372142d198F2b6b6",
       "hash": "0xed8d90c128b5e83c04fe31ccd409e6afb58df3aca9bc7c31e5e12116d5c0c07f",
       "block": 3877662,
       "gasUsed": "21000",
-      "explorer": "https://explorer-test.qday.info/tx/0xed8d90c128b5e83c04fe31ccd409e6afb58df3aca9bc7c31e5e12116d5c0c07f"
+      "explorer": "https://explorer-test.qday.info/tx/0xed8d90c128b5e83c04fe31ccd409e6afb58df3aca9bc7c31e5e12116d5c0c07f",
+      "status": 1,
+      "blockNumber": 3877662
     },
     {
       "step": "registerPayee (supplier)",
       "hash": "0x2a1e6ad759e0ab48f7c7fe0ed7d413518584208758ed829132c4f958d3e7b9bc",
       "block": 3877668,
       "gasUsed": "90724",
-      "explorer": "https://explorer-test.qday.info/tx/0x2a1e6ad759e0ab48f7c7fe0ed7d413518584208758ed829132c4f958d3e7b9bc"
+      "explorer": "https://explorer-test.qday.info/tx/0x2a1e6ad759e0ab48f7c7fe0ed7d413518584208758ed829132c4f958d3e7b9bc",
+      "status": 1,
+      "blockNumber": 3877668
     },
     {
       "step": "tUSD8 approve (treasury → guard)",
       "hash": "0x8f2ada24c6afdc9088407693192b445c8c7927fa8108aaaa37d5cbc653aaa402",
       "block": 3877675,
-      "explorer": "https://explorer-test.qday.info/tx/0x8f2ada24c6afdc9088407693192b445c8c7927fa8108aaaa37d5cbc653aaa402"
+      "explorer": "https://explorer-test.qday.info/tx/0x8f2ada24c6afdc9088407693192b445c8c7927fa8108aaaa37d5cbc653aaa402",
+      "status": 1,
+      "blockNumber": 3877675
     },
     {
       "step": "setAgentMandate 2 / 4 tUSD8, 2h",
       "hash": "0xd5895f604bff9cf2121ba006f71fa3e2532536222a2d19f3cb0636675df42aad",
       "block": 3877681,
       "gasUsed": "94780",
-      "explorer": "https://explorer-test.qday.info/tx/0xd5895f604bff9cf2121ba006f71fa3e2532536222a2d19f3cb0636675df42aad"
+      "explorer": "https://explorer-test.qday.info/tx/0xd5895f604bff9cf2121ba006f71fa3e2532536222a2d19f3cb0636675df42aad",
+      "status": 1,
+      "blockNumber": 3877681
     },
     {
       "step": "revert check: wrong payee name",
@@ -90,28 +100,36 @@
       "hash": "0x53e053b84d1ddff2a538370544972b46259f765919e02fdb3b91d61f47fd94d8",
       "block": 3877688,
       "gasUsed": "319724",
-      "explorer": "https://explorer-test.qday.info/tx/0x53e053b84d1ddff2a538370544972b46259f765919e02fdb3b91d61f47fd94d8"
+      "explorer": "https://explorer-test.qday.info/tx/0x53e053b84d1ddff2a538370544972b46259f765919e02fdb3b91d61f47fd94d8",
+      "status": 1,
+      "blockNumber": 3877688
     },
     {
       "step": "submitDeliverable (supplier)",
       "hash": "0x49e775f3ad8e933512aa5f656b539dd6429e65de5b6658a494178b5ac2644070",
       "block": 3877694,
       "gasUsed": "53364",
-      "explorer": "https://explorer-test.qday.info/tx/0x49e775f3ad8e933512aa5f656b539dd6429e65de5b6658a494178b5ac2644070"
+      "explorer": "https://explorer-test.qday.info/tx/0x49e775f3ad8e933512aa5f656b539dd6429e65de5b6658a494178b5ac2644070",
+      "status": 1,
+      "blockNumber": 3877694
     },
     {
       "step": "releaseInvoice (treasury)",
       "hash": "0x2298db49fc9d2b172ea733cfdfabd5d187001d5ef05139d80aa2ec38e12cb5f6",
       "block": 3877700,
       "gasUsed": "74627",
-      "explorer": "https://explorer-test.qday.info/tx/0x2298db49fc9d2b172ea733cfdfabd5d187001d5ef05139d80aa2ec38e12cb5f6"
+      "explorer": "https://explorer-test.qday.info/tx/0x2298db49fc9d2b172ea733cfdfabd5d187001d5ef05139d80aa2ec38e12cb5f6",
+      "status": 1,
+      "blockNumber": 3877700
     },
     {
       "step": "revokeAgentMandate (treasury)",
       "hash": "0x4381aebdb6e790370b45bc7c681f962bd5328b229e998ebf2cfd2ef11750492f",
       "block": 3877706,
       "gasUsed": "28531",
-      "explorer": "https://explorer-test.qday.info/tx/0x4381aebdb6e790370b45bc7c681f962bd5328b229e998ebf2cfd2ef11750492f"
+      "explorer": "https://explorer-test.qday.info/tx/0x4381aebdb6e790370b45bc7c681f962bd5328b229e998ebf2cfd2ef11750492f",
+      "status": 1,
+      "blockNumber": 3877706
     },
     {
       "step": "revert check: agent after revocation",

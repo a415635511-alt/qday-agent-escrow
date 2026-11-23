@@ -17,7 +17,7 @@
 
 5. Legitimate invoice: 45 tUSD8 into escrow
 ───────────────────────────────────────────
-   funded, tx 0xf0ecbf18f773cbffda13a85756ef17d5101676313dfa26a2bbe5e6374a6f26e4
+   funded, tx 0x0ec6a0fc5a70a27baa908364c781fd11060014a0341871c3ef8b892b57f06cb0
    escrow balance 45.0 tUSD8
 
 6. Attack: second invoice of 40 tUSD8 would break the 80 tUSD8 daily cap
