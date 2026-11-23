@@ -202,7 +202,7 @@ function syncActions() {
 const units = (v) => ethers.parseUnits(String(v), 6);
 const hashed = (s) => ethers.keccak256(ethers.toUtf8Bytes(s));
 
-let provider, signer, escrow, usd, me;
+let provider, signer, escrow, usd, me, view;
 
 async function ensureChain() {
   const cur = await window.ethereum.request({ method: 'eth_chainId' });
@@ -221,8 +221,9 @@ async function refreshBalances() {
 }
 
 async function refreshLedger() {
-  if (!escrow) return;
-  const next = Number(await escrow.nextInvoiceId());
+  const reader = view || escrow;              // view = read-only RPC, no wallet needed
+  if (!reader) return;
+  const next = Number(await reader.nextInvoiceId());
   const body = $('ledger');
   body.replaceChildren();
   if (next <= 1) {
@@ -236,7 +237,7 @@ async function refreshLedger() {
     return;
   }
   for (let id = 1; id < next; id++) {
-    const inv = await escrow.invoices(id);
+    const inv = await reader.invoices(id);
     const st = STATUS[Number(inv.status)] || '?';
     const tr = document.createElement('tr');
     const cells = [
@@ -297,6 +298,19 @@ async function send(label, fn) {
 }
 
 syncActions(); // every action button starts disabled until a wallet is connected
+
+// Read-only bootstrap: judges can see the real on-chain ledger without a wallet.
+(async () => {
+  try {
+    const ro = new ethers.JsonRpcProvider(CHAIN.rpcUrls[0], Number(CHAIN.chainId), { staticNetwork: true });
+    view = new ethers.Contract(ESCROW, ABI, ro);
+    log(`read-only: ${ESCROW}`);
+    await refreshLedger();
+    log('ledger loaded from chain — connect a wallet only to send transactions');
+  } catch (e) {
+    log(`read-only load failed: ${errText(e)}`, true);
+  }
+})();
 
 $('connect').onclick = async () => {
   if (!window.ethereum) return log('No EVM wallet found in this browser. Install MetaMask or Rabby.', true);
