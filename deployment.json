@@ -1,0 +1,18 @@
+{
+  "network": "QDay Aevum Testnet",
+  "chainId": 44005,
+  "rpc": "https://rpc-test.qday.info",
+  "explorer": "https://explorer-test.qday.info",
+  "tusd8": "0x456569838f1d43009A91ebA4263147Afd7233483",
+  "deployer": "0xda4A61343Cc7624e372BaA7a880000576497e782",
+  "agentPayGuard": null,
+  "deploymentTx": null,
+  "deploymentBlock": null,
+  "state": "not_deployed",
+  "note": "Set to the real address and transaction hash only after scripts/deploy_aevum.mjs returns a receipt with status 1 and the address is read back from the chain.",
+  "localVerification": {
+    "compile": "solc 0.8.29, evmVersion shanghai — passed",
+    "tests": "node --test test/escrow.test.mjs — 1/1 passed (happy path + 5 revert paths)",
+    "demo": "node scripts/demo_local.mjs — nine-step lifecycle executed on a throwaway chain"
+  }
+}

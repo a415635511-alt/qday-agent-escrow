@@ -1,0 +1,40 @@
+
+1. Supplier commits its identity (Confirmation of Payee)
+────────────────────────────────────────────────────────
+   verifyPayee → ok=true  metadata=0x86c31e90e3a32235…
+
+2. Treasury grants the AI agent a bounded mandate (50 / invoice, 80 / day, 24h)
+───────────────────────────────────────────────────────────────────────────────
+   mandate active — the caps live in the contract, not in the agent
+
+3. Attack: agent tries to pay an address registered under a different name
+──────────────────────────────────────────────────────────────────────────
+   blocked → execution reverted: "COP_NAME_MISMATCH"
+
+4. Attack: agent tries 60 tUSD8 on a 50 tUSD8 mandate
+─────────────────────────────────────────────────────
+   blocked → execution reverted: "EXCEEDS_PER_INVOICE_CAP"
+
+5. Legitimate invoice: 45 tUSD8 into escrow
+───────────────────────────────────────────
+   funded, tx 0xe78927cdc882cb69fad03fdbe1dc737209999b9d6acbec1cd5f1b15cd0690ab4
+   escrow balance 45.0 tUSD8
+
+6. Attack: second invoice of 40 tUSD8 would break the 80 tUSD8 daily cap
+────────────────────────────────────────────────────────────────────────
+   blocked → execution reverted: "EXCEEDS_DAILY_CAP"
+
+7. Supplier delivers, agent releases
+────────────────────────────────────
+   released, tx 0xd325b43dd32edae116053d6c57d9a305a73c13bef09a097c2792e27ab4c71d7c
+   supplier balance 45.0 tUSD8
+
+8. Treasury revokes the agent and it is cut off immediately
+───────────────────────────────────────────────────────────
+   blocked → execution reverted: "MANDATE_INACTIVE"
+
+9. Deadline miss returns the money to the treasury
+──────────────────────────────────────────────────
+   refunded 30.0 tUSD8 to the treasury
+
+All nine steps executed on-chain. Same contract bytecode runs on QDay Aevum (chain 44005).
